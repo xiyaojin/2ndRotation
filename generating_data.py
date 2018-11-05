@@ -24,26 +24,45 @@ def list_all_files(rootdir):
                    break
                if list[i]=='tice_hist.nii.gz':
                    files.append(path)
-                   files_image.append(path)
+                   I=sitk.ReadImage(path)
+                   I_array=sitk.GetArrayFromImage(I)
+                   z=np.shape(I_array)[0] 
+                   for j in range(z):
+                       write_path=os.path.join(rootdir,'image_'+str(j)+'.npy')
+                       np.save(write_path,I_array[j,:,:])
+                       slices_image.append(write_path)
+                
+                   #files_image.append(path)
                if list[i]=='truth.nii.gz':
                    files.append(path)
-                   files_label.append(path)
+                   L=sitk.ReadImage(path)
+                   L_array=sitk.GetArrayFromImage(L)
+                   z=np.shape(L_array)[0]
+                   for j in range(z):
+                       write_path=os.path.join(rootdir,'label_'+str(j)+'.npy')
+                       np.save(write_path,L_array[j,:,:])
+                       slices_label.append(write_path)
+                   #files_label.append(path)
                    
     return files
 
-files_image=[]
-files_label=[]
+#files_image=[]
+#files_label=[]
+slices_image=[]
+slices_label=[]
 
-root_dir=r'E:histogram_matching_results'
+root_dir=r'E:test'
 files=list_all_files(root_dir)
 
 train_percentage=0.9
-train_image_list=files_image[0:int(len(files_image)*train_percentage)]
-train_label_list=files_label[0:int(len(files_image)*train_percentage)]
-test_image_list=files_image[int(len(files_image)*train_percentage):]
-test_label_list=files_label[int(len(files_image)*train_percentage):]
+train_image_list=slices_image[0:int(len(slices_image)*train_percentage)]
+train_label_list=slices_label[0:int(len(slices_image)*train_percentage)]
+test_image_list=slices_image[int(len(slices_image)*train_percentage):]
+test_label_list=slices_label[int(len(slices_image)*train_percentage):]
 
 np.save('e:train_image_list.npy',train_image_list)
 np.save('e:train_label_list.npy',train_label_list)
 np.save('e:test_image_list.npy',test_image_list)
 np.save('e:test_label_list.npy',test_label_list)
+
+
