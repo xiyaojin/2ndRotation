@@ -44,25 +44,16 @@ class DataGenerator(keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp,labels_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        temp_file=sitk.ReadImage(list_IDs_temp[0])
-        temp_array=sitk.GetArrayFromImage(temp_file)
-        slices=np.shape(temp_array)[0]
-        z=self.batch_size*slices
-        X = np.empty((self.batch_size*z, *self.dim))
-        y = np.empty((self.batch_size*z, *self.dim), dtype=int)
+        X = np.empty((self.batch_size, *self.dim))
+        y = np.empty((self.batch_size, *self.dim), dtype=int)
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            image=sitk.ReadImage(ID)
-            I=sitk.GetArrayFromImage(image)
-           
-            label=sitk.ReadImage(labels_temp[i])
-            L=sitk.GetArrayFromImage(label)
-            L[L!=1]=0
+            X[i,]=np.load(ID)[:,:,np.newaxis]
+            label=np.load(labels_temp[i])[:,:,np.newaxis]
+            label[label!=1]=0
+            y[i,]=label
             # Store class
-            for j in range(slices):
-                X[i*slices+j,:,:,0]=I[j,:,:]
-                y[i*slices+j,:,:,0]=L[j,:,:]
 
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
