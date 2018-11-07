@@ -7,7 +7,7 @@ from PIL import Image
 from keras.preprocessing.image import *
 
 params = {'dim': (240,240,1),
-          'batch_size': 16,
+          'batch_size': 1,
           'n_classes': 2,
           'n_channels': 1,
           'shuffle': True}
@@ -22,7 +22,7 @@ model.load_weights('/home/xjin/brats_dataset/weights.hdf5')
 
 test_image=np.load('/home/xjin/brats_dataset/test_image_list.npy')
 test_label=np.load('/home/xjin/brats_dataset/test_label_list.npy')
-test_gen=DateGenerator(test_image,test_label,**params)
+test_gen=DataGenerator(test_image,test_label,**params)
 
 
 
@@ -31,13 +31,14 @@ nb_test_samples = len(test_image)
 
 
 start_time = time.time()
-y_predictions = self.model.predict_generator(test_gen, steps=nb_test_samples)
+y_predictions = model.predict_generator(test_gen, steps=nb_test_samples)
 total_time = time.time() - start_time
 fps = float(nb_test_samples) / total_time
 s_p_f = total_time / float(nb_test_samples)
 print ('   Testing time: {}. FPS: {}. Seconds per Frame: {}'.format(total_time, fps, s_p_f))
+print ('/n Number of slices: '+str(nb_test_samples))
 
-result_path = os.path.join('/home/xjin/brat_dataset/output/','predicted_labels')
+result_path = os.path.join('/home/xjin/brats_dataset/output_11_6/','predicted_labels')
 if os.path.exists(result_path) == False:
     os.mkdir(result_path)
     
@@ -46,8 +47,8 @@ for (idx, path) in enumerate(test_label):
     directory=os.path.split(path)[0]
     patient_id=os.path.split(directory)[1]
     if os.path.exists(os.path.join(result_path,patient_id))==False:
-        os.mkdir(os.path.joint(result_path,patient_id))
-    label_id=os.path.split(os.path.split(path)[1])[0]
+        os.mkdir(os.path.join(result_path,patient_id))
+    label_id=os.path.splitext(os.path.split(path)[1])[0]
     if idx > nb_test_samples-1:
         continue
     y_sample_prediction = y_predictions[idx,:,:,:]
@@ -64,4 +65,4 @@ for (idx, path) in enumerate(test_label):
     
     result_img.save(os.path.join(result_path, patient_id, label_id + '.png'))
 
-np.save(os.path.join(result_path, 'y_pred'),y_predictions)
+#np.save(os.path.join(result_path, 'y_pred'),y_predictions)
