@@ -3,6 +3,9 @@
 import numpy as np
 import keras
 import SimpleITK as sitk
+from PIL import Image
+from keras.preprocessing.image import *
+
 
 class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
@@ -39,7 +42,6 @@ class DataGenerator(keras.utils.Sequence):
         'Updates indexes after each epoch'
         self.indexes = np.arange(len(self.list_IDs))
         if self.shuffle == True:
-            np.random.shuffle(self.indexes)
 
     def __data_generation(self, list_IDs_temp,labels_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
@@ -50,10 +52,12 @@ class DataGenerator(keras.utils.Sequence):
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            X[i,]=np.load(ID)[:,:,np.newaxis]
-            label=np.load(labels_temp[i])[:,:,np.newaxis]
-            label[label!=1]=0
-            y[i,]=label
+            image=load_img(ID)
+            I=img_to_array(image,'channels_last')
+            label=load_img(labels_temp[i])
+            L=img_to_array(label,'channels_last')
+            X[i,]=I
+            y[i,]=L
             # Store class
 
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
