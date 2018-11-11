@@ -42,7 +42,8 @@ class DataGenerator(keras.utils.Sequence):
         'Updates indexes after each epoch'
         self.indexes = np.arange(len(self.list_IDs))
         if self.shuffle == True:
-
+            np.random.shuffle(self.indexes)
+            
     def __data_generation(self, list_IDs_temp,labels_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
@@ -53,11 +54,17 @@ class DataGenerator(keras.utils.Sequence):
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             image=load_img(ID)
-            I=img_to_array(image,'channels_last')
+            I=img_to_array(image,'channels_last')[:,:,1]
+            (a,b,c)=np.shape(I)
+            l=np.max(I)
             label=load_img(labels_temp[i])
-            L=img_to_array(label,'channels_last')
+            L=img_to_array(label,'channels_last')[:,:,1]
+            for m in range(a):
+                for j in range(b):
+                    I[m][n]=I[m][n]/l
+                    L[m][n]=L[m][n]/255
             X[i,]=I
             y[i,]=L
             # Store class
 
-        return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
+        return X, y
