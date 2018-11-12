@@ -13,12 +13,12 @@ l=np.max(x)
 for i in range(a):
     for j in range(b):
         x[i][j]=x[i][j]/l
-model=AtrousFCN_Resnet50_16s(input_shape=(240,240,1),weight_decay=0.00005,batch_momentum=0.95,batch_shape=None,classes=2)
-model.load_weights(r'e:weights_11_10_2.hdf5')
+model=AtrousFCN_Resnet50_16s(input_shape=(240,240,1),weight_decay=0.00005,batch_momentum=0.95,batch_shape=None,classes=1)
+model.load_weights(r'e:weights_11_10_3.hdf5')
 x=x[np.newaxis,:,:,np.newaxis]
 pred=model.predict(x)
 
 Pred=np.squeeze(pred)
-result = np.expand_dims(np.argmax(Pred, axis=-1), axis=-1)
-#plt.pyplot.imshow(Pred)
+#result = np.expand_dims(np.argmax(Pred, axis=-1), axis=-1)
+plt.pyplot.imshow(Pred)
 
