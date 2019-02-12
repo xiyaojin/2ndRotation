@@ -2,7 +2,6 @@
 
 import numpy as np
 import keras
-import SimpleITK as sitk
 from PIL import Image
 from keras.preprocessing.image import *
 
@@ -67,4 +66,5 @@ class DataGenerator(keras.utils.Sequence):
             y[i,]=L
             # Store class
 
-        return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
+#        return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
+        return X,y 

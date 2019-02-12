@@ -65,10 +65,10 @@ def list_all_files(rootdir):
 slices_image=[]
 slices_label=[]
 
-root_dir=r'E:test'
+root_dir='/home/xjin/brats_dataset/histogram_matching_results'
 #files=list_all_files(root_dir)
 list=os.listdir(root_dir)
-output_dir=r'E:test2'
+output_dir='/home/xjin/brats_dataset_1_4_label'
 for i in list:
     new_root=os.path.join(root_dir,i)
     if os.path.isdir(new_root):
@@ -81,7 +81,8 @@ for i in list:
                     I_array=sitk.GetArrayFromImage(I)
                     L=sitk.ReadImage(os.path.join(new_root,'truth.nii.gz'))
                     L_array=sitk.GetArrayFromImage(L)
-                    L_array[L_array!=1]=0
+                    L_array[L_array==2]=0
+                    L_array[L_array==4]=1
                     z=np.shape(L_array)[0]
                     for k in range(z):
                         if np.max(L_array[k,:,:])!=0:
@@ -112,11 +113,11 @@ np.save('e:validation_image_list.npy',validation_image_list)
 np.save('e:validation_label_list.npy',validation_label_list)
 np.save('e:test_image_list.npy',test_image_list)
 np.save('e:test_label_list.npy',test_label_list)
-
-np.save('/home/xjin/brats_dataset/train_image_list.npy',train_image_list)
-np.save('/home/xjin/brats_dataset/train_label_list.npy',train_label_list)
-np.save('/home/xjin/brats_dataset/validation_image_list.npy',validation_image_list)
-np.save('/home/xjin/brats_dataset/validation_label_list.npy',validation_label_list)
-np.save('/home/xjin/brats_dataset/test_image_list.npy',test_image_list)
-np.save('/home/xjin/brats_dataset/test_label_list.npy',test_label_list)
 '''
+np.save(os.path.join(output_dir,'train_image_list.npy'),train_image_list)
+np.save(os.path.join(output_dir,'train_label_list.npy'),train_label_list)
+np.save(os.path.join(output_dir,'validation_image_list.npy'),validation_image_list)
+np.save(os.path.join(output_dir,'validation_label_list.npy'),validation_label_list)
+np.save(os.path.join(output_dir,'test_image_list.npy'),test_image_list)
+np.save(os.path.join(output_dir,'test_label_list.npy'),test_label_list)
+
